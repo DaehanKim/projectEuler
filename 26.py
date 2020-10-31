@@ -1,16 +1,35 @@
 import math
+from tqdm import tqdm
 
-def str_inversion(inp, limit = 20):
-    start_pos = math.ceil(math.log10(inp))
-    ret = [0 for _ in range(start_pos-1)]
-    numerator = 10 ** start_pos
-    for _ in range(limit):
-        ret.append(numerator//inp)
-        if numerator%inp == 0 : break 
-        numerator = (numerator%inp) * 10
-    return "".join(map(lambda x:str(x), ret))
+def is_divisible(a, b):
+	# a, b : string
+	# returns True if a is divisible by b else false
+    if len(a) <= len(b) + 1:
+    	# exit condition
+    	if int(a) % int(b) == 0 : return True
+    	return False
+    res = int(a[:len(b)+1]) % int(b)
+    new_a = str(res)+a[len(b)+1:]
+    return is_divisible(new_a,b)
 
+def remove_10(inp):
+	ret = inp
+	while(ret % 2 == 0):
+		ret //= 2
+	while(ret % 5 == 0):
+		ret //= 5
+	return ret
 
+def num_recurring_cycle(inp):
+	inp = remove_10(inp)
+	if inp == 1 : return 0
+	cnt = 1
+	while(True):
+		if is_divisible("9"*cnt,str(inp)) : break
+		cnt += 1
+	return cnt
 
-# for i in range(10,20):
-#     print(str_inversion(i))
+rec_list = [num_recurring_cycle(num) for num in tqdm(range(1,1001))]
+print(rec_list)
+print(max(rec_list))
+print(rec_list.index(max(rec_list))+1)
